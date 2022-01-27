@@ -1,22 +1,24 @@
 use log::{self, Level, LevelFilter, Metadata, Record, SetLoggerError};
 
-static LOGGER: SimpleLogger = SimpleLogger {
-    level: Level::Info,
-};
+static LOGGER: SimpleLogger = SimpleLogger;
 
 pub fn init() -> Result<(), SetLoggerError> {
     log::set_logger(&LOGGER).map(|()| {
-        log::set_max_level(LevelFilter::Info);
+        log::set_max_level(match option_env!("LOG_LEVEL") {
+            Some(level) => match level.parse::<LevelFilter>() {
+                Ok(level) => level,
+                Err(_) => LevelFilter::Info,
+            },
+            None => LevelFilter::Info,
+        });
     })
 }
 
-struct SimpleLogger {
-    level: Level,
-}
+struct SimpleLogger;
 
 impl log::Log for SimpleLogger {
-    fn enabled(&self, metadata: &Metadata) -> bool {
-        metadata.level() <= self.level
+    fn enabled(&self, _metadata: &Metadata) -> bool {
+        true
     }
 
     fn log(&self, record: &Record) {

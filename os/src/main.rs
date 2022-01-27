@@ -3,7 +3,7 @@
 #![feature(panic_info_message)]
 
 use core::arch::global_asm;
-use log::{info, warn};
+use log::{info, warn, trace};
 
 #[macro_use]
 mod console;
@@ -37,6 +37,7 @@ pub fn rust_main() -> ! {
     }
     clear_bss();
     logging::init().unwrap();
+    trace!("You cannot trace this message");
     warn!("Hello, world!");
     info!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
     info!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
